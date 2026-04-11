@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AI Math Solver{% endblock %} - Learn & Solve</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <!-- Plotly and Math.js for graphs and calculator -->
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/12.0.0/math.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        pastel: {
+                            bg: '#fef6ff',
+                            primary: '#cdb4db',
+                            accent: '#ffc8dd',
+                            dark: '#4a4e69',
+                            white: '#ffffff',
+                            glass: 'rgba(255, 255, 255, 0.7)'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-pastel-bg text-pastel-dark font-sans min-h-screen flex flex-col antialiased">
+    
+    <!-- Navbar -->
+    <nav class="bg-pastel-glass backdrop-blur-md sticky top-0 z-50 border-b border-pastel-primary/30 px-6 py-4 transition-all duration-300">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <a href="{{ url_for('main.index') }}" class="text-2xl font-bold flex items-center gap-2 group">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-pastel-primary to-pastel-accent flex items-center justify-center text-white shadow-lg group-hover:scale-105 transition-transform">
+                    <i class="fa-solid fa-square-root-variable"></i>
+                </div>
+                <span class="bg-clip-text text-transparent bg-gradient-to-r from-pastel-dark to-purple-800">SolveMate AI</span>
+            </a>
+            
+            <div class="flex items-center gap-4">
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('main.dashboard') }}" class="font-medium hover:text-pastel-primary transition-colors">Dashboard</a>
+                    <div class="h-6 w-px bg-gray-300"></div>
+                    <span class="font-medium">Hi, {{ current_user.username }}</span>
+                    <a href="{{ url_for('auth.logout') }}" class="ml-2 px-4 py-2 rounded-full border border-pastel-primary text-pastel-dark hover:bg-pastel-primary hover:text-white transition-all shadow-sm">Logout</a>
+                {% else %}
+                    <a href="{{ url_for('auth.login') }}" class="font-medium hover:text-pastel-primary transition-colors">Login</a>
+                    <a href="{{ url_for('auth.signup') }}" class="px-5 py-2.5 rounded-full bg-gradient-to-r from-pastel-primary to-pastel-accent hover:shadow-lg hover:scale-105 transition-all text-white font-medium shadow-md">Sign Up for Free</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    <div class="fixed top-24 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-md pointer-events-none">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="pointer-events-auto flex items-center gap-3 p-4 mb-3 rounded-2xl shadow-xl backdrop-blur-lg transform transition-all animate-slide-down
+                        {% if category == 'success' %}bg-green-100/90 border border-green-200 text-green-800
+                        {% elif category == 'danger' %}bg-red-100/90 border border-red-200 text-red-800
+                        {% elif category == 'warning' %}bg-yellow-100/90 border border-yellow-200 text-yellow-800
+                        {% else %}bg-blue-100/90 border border-blue-200 text-blue-800{% endif %}">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-info-circle"></i>
+                        </div>
+                        <p class="font-medium">{{ message }}</p>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Main Content -->
+    <main class="flex-grow flex flex-col">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white/50 backdrop-blur-sm border-t border-pastel-primary/20 py-8 mt-auto">
+        <div class="max-w-7xl mx-auto px-6 text-center text-sm text-gray-500">
+            <p>&copy; 2026 SolveMate AI. Built with Flask & GPT-4o-mini.</p>
+        </div>
+    </footer>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>
